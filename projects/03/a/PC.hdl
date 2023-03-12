@@ -27,3 +27,5 @@ CHIP PC {
 // That failed as well, so I eventually decided to use the approach you see above.
 // Realize that the load in Register is always turned to "true"
 // I hope this helps!
+
+// Update - I realized that you could figure out the precedence from the abstraction description above the chip implementation as well :)
