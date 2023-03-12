@@ -16,5 +16,14 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    Register(in=outT, load=true, out=feedback, out=out);
+    Inc16(in=feedback, out=incOut);
+    Mux8Way16(a=false, b=incOut, c=in, d=in, e=false, f=false, g=false, h=false, sel[0]=inc, sel[1]=load, sel[2]=reset, out=outT);
 }
+
+// This one is very tricky.  I started by implementing with multiple Mux16, assumed that only one of inc, load, and reset would be turned on
+// However,  I realized that the selectors could be on simultaneously, which means that I'll need to find our each selector's precedence
+// After figuring out each selector's precednece from the .cmp, I tried to reflect the precedence by ordering the multiple Mux16 I was using
+// That failed as well, so I eventually decided to use the approach you see above.
+// Realize that the load in Register is always turned to "true"
+// I hope this helps!
