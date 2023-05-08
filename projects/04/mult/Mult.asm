@@ -11,43 +11,32 @@
 
 // Put your code here.
 
- // n = 0
  @n
- M=0
-
- // sum = 0
+ M=0             // n = 0
  @sum
- M=0
+ M=0             // sum = 0
 
 (LOOP)
-  // if (n == R1) goto STOP
   @n
   D=M
   @R1
   D=D-M
   @STOP
-  D;JEQ
-  
-  // sum = sum + R0
+  D;JEQ          // if (n == R1) goto STOP
   @R0
   D=M
   @sum
-  M=D+M
-  
-  // n = n + 1
+  M=D+M          // sum = sum + R0
   @n
-  M=M+1
-  
-  // goto LOOP
+  M=M+1          // n++
   @LOOP
-  0;JMP
+  0;JMP          // goto LOOP
 
 (STOP)
-  // R2 = sum
   @sum
   D=M
   @R2
-  M=D
+  M=D            // R2 = sum
 
 (END)
   @END
