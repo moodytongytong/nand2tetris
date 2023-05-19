@@ -27,5 +27,14 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    DMux(in=load, sel=address[14], a=ramLoad, b=ioLoad);
+    RAM16K(in=in, load=ramLoad, address=address[0..13], out=ramOut);
+    Screen(in=in, load=ioLoad, address=address[0..12], out=screenOut);
+    Keyboard(out=keyboardOut);
+    Mux4Way16(a=ramOut, b=ramOut, c=screenOut, d=keyboardOut, sel=address[13..14], out=out);
 }
+
+// I realize that most people's design use a DMux4Way instead of the 2-way DMux
+// I agreed with that, because it prevents a load=1 or the keyboard address being loaded into the screen chip.
+// However, given that the keyboard chip takes no input, and I found the coursera course mentor confirming
+// on the course forum that there will never be load=1 for the keyboard memory map's address, DMux might be more elegant.
