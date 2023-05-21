@@ -39,5 +39,24 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+    And(a=instruction[15], b=instruction[15], out=isC);
+    Not(in=isC, out=isA);
+    
+    Mux(a=instruction[0], b=instruction[1], sel=isZero, out=zOut);    // Calculate whether jump takes place
+    Mux(a=zOut, b=instruction[2], sel=isNeg, out=negOut);
+    And(a=isC, b=negOut, out=jump);
+    Not(in=jump, out=increment);
+    PC(in=AReg, load=jump, inc=increment, reset=reset, out[0..14]=pc);
+
+    Mux16(a=ALUout, b=instruction, sel=isA, out=potentialAReg);      // ensure A and D registers are correctly loaded
+    Or(a=isC, b=instruction[5], out=loadA);
+    Or(a=loadA, b=isA, out=updateA);
+    And(a=isC, b=instruction[4], out=loadD);
+    ARegister(in=potentialAReg, load=updateA, out=AReg, out[0..14]=addressM);
+    DRegister(in=ALUout, load=loadD, out=ALUx);                      // ensure the inputs to ALU are correct
+    And(a=isC, b=instruction[12], out=chooseM);
+    Mux16(a=AReg, b=inM, sel=chooseM, out=ALUy);
+    
+    ALU(x=ALUx, y=ALUy, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outM, out=ALUout, zr=isZero, ng=isNeg);
+    And(a=isC, b=instruction[3], out=writeM);
 }
