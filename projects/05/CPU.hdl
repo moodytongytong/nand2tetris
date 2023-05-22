@@ -49,7 +49,7 @@ CHIP CPU {
     PC(in=AReg, load=jump, inc=increment, reset=reset, out[0..14]=pc);
 
     Mux16(a=ALUout, b=instruction, sel=isA, out=potentialAReg);      // ensure A and D registers are correctly loaded
-    Or(a=isC, b=instruction[5], out=loadA);
+    And(a=isC, b=instruction[5], out=loadA);
     Or(a=loadA, b=isA, out=updateA);
     And(a=isC, b=instruction[4], out=loadD);
     ARegister(in=potentialAReg, load=updateA, out=AReg, out[0..14]=addressM);
