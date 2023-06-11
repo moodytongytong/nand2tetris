@@ -1,16 +1,18 @@
 
 use InstructionType::*;
 
-struct Instruction<'a> {
-    symbolic_code: &'a str,
-    instruction_type: InstructionType,
+#[derive(Debug)]
+pub struct Instruction {
+    pub symbolic_code: String,
+    pub instruction_type: InstructionType,
 }
 
-impl Instruction<'static> {
-    fn from(line_asm: &'static str) -> Self {
-        let instruction_type = Instruction::find_type(line_asm);
+impl Instruction {
+    pub fn from(line_asm: &str) -> Self {
+        let symbolic_code = Instruction::remove_whitespaces(line_asm);
+        let instruction_type = Instruction::find_type(&symbolic_code);
         Self {
-            symbolic_code: line_asm,
+            symbolic_code,
             instruction_type,
         }
     }
@@ -25,12 +27,11 @@ impl Instruction<'static> {
         }
     }   
 
-    // fn remove_whitespaces(&mut self) {
-    //     let trimmed_str: &'static str = &self.symbolic_code.replace(" ", "");
-    //     self.symbolic_code = trimmed_str;
-    // }
+    fn remove_whitespaces(raw_instruction: &str) -> String {
+        raw_instruction.replace(" ", "")
+    }
 
-    fn dest(&self) -> &str {
+    pub fn dest(&self) -> &str {
         if let Some(equal_index) = self.symbolic_code.find("=") {
             &self.symbolic_code[0..equal_index]
         } else {
@@ -38,7 +39,7 @@ impl Instruction<'static> {
         }
     }
 
-    fn comp(&self) -> &str {
+    pub fn comp(&self) -> &str {
         let start_index = if let Some(equal_index) = self.symbolic_code.find("=") {
             equal_index + 1
         } else {
@@ -51,7 +52,7 @@ impl Instruction<'static> {
         }
     }
 
-    fn jump(&self) -> &str {
+    pub fn jump(&self) -> &str {
         if let Some(semicolon_index) = self.symbolic_code.find(";") {
             &self.symbolic_code[semicolon_index+1 ..]
         } else {
@@ -59,7 +60,7 @@ impl Instruction<'static> {
         }
     }
 
-    fn symbol(&self) -> &str {
+    pub fn symbol(&self) -> &str {
         if let Some(closing_index) = self.symbolic_code.find(")") {
             &self.symbolic_code[1..closing_index]
         } else {
@@ -69,7 +70,7 @@ impl Instruction<'static> {
 }
 
 #[derive(Debug, PartialEq)]
-enum InstructionType {
+pub enum InstructionType {
     AInstruction,
     CInstruction,
     LInstruction,
@@ -170,10 +171,16 @@ mod tests {
         assert_eq!(LInstruction, a_instruction.instruction_type);
     }
 
-    // #[test]
-    // fn remove_whitespace_from_instruction() {
-    //     let mut instruction = Instruction::from("  M = M + 1  ");
-    //     instruction.remove_whitespaces();
-    //     assert_eq!("M+M+1", instruction.symbolic_code);
-    // }
+    #[test]
+    fn remove_whitespace_from_instruction() {
+        let instruction = "  M = M + 1  ";
+        let cleaned_instruction = Instruction::remove_whitespaces(instruction);
+        assert_eq!("M=M+1", cleaned_instruction);
+    }
+
+    #[test]
+    fn instruction_with_whitespaces_are_clean_at_instantiation() {
+        let instruction = Instruction::from("    D   ;    JGT    ");
+        assert_eq!("D;JGT", instruction.symbolic_code);
+    }
 }

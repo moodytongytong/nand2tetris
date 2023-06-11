@@ -1,4 +1,4 @@
-fn dest(argument: &str) -> &str {
+pub fn dest(argument: &str) -> &str {
     match argument {
         "" => "000",
         "M" => "001",
@@ -12,7 +12,7 @@ fn dest(argument: &str) -> &str {
     }
 }
 
-fn comp(argument: &str) -> &str {
+pub fn comp(argument: &str) -> &str {
     match argument {
         "0" => "0101010",
         "1" => "0111111",
@@ -47,7 +47,7 @@ fn comp(argument: &str) -> &str {
 }
 // see if there are ways to simpify this.  If not, might just enumerate all possibilities
 
-fn jump(argument: &str) -> &str {
+pub fn jump(argument: &str) -> &str {
     match argument {
         "" => "000",
         "JGT" => "001",
@@ -59,6 +59,10 @@ fn jump(argument: &str) -> &str {
         "JMP" => "111",
         _ => "wrong jump"
     }
+}
+
+pub fn binary(decimal: u16) -> String {
+    format!("{:015b}", decimal)
 }
 
 
@@ -97,5 +101,14 @@ mod tests {
         let jump_asm = "JMP";
         let jump_binary = jump(jump_asm);
         assert_eq!("111", jump_binary);
+    }
+
+    #[test]
+    fn correctly_convert_decimal_to_15_digit_binary_string() {
+        let int = 42;
+        assert_eq!("000000000101010", binary(int));
+
+        let int = 100;
+        assert_eq!("000000001100100", binary(int));
     }
 }
