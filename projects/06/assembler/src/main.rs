@@ -11,5 +11,3 @@ fn main() -> std::io::Result<()> {
 
     Ok(())
 }
-
-// might want to add a README if there's time
