@@ -9,8 +9,12 @@ pub struct Instruction {
 
 impl Instruction {
     pub fn from(line_asm: &str) -> Self {
-        let symbolic_code = Instruction::remove_whitespaces(line_asm);
+        // Need to remove any comments first
+        let mut symbolic_code = Instruction::remove_whitespaces(line_asm);
         let instruction_type = Instruction::find_type(&symbolic_code);
+        if let Some(comment_index) = symbolic_code.find("//") {
+            symbolic_code = symbolic_code[0..comment_index].to_string();
+        }
         Self {
             symbolic_code,
             instruction_type,
@@ -181,6 +185,12 @@ mod tests {
     #[test]
     fn instruction_with_whitespaces_are_clean_at_instantiation() {
         let instruction = Instruction::from("    D   ;    JGT    ");
+        assert_eq!("D;JGT", instruction.symbolic_code);
+    }
+
+    #[test]
+    fn instruction_with_comment_have_the_comment_portion_cleared() {
+        let instruction = Instruction::from("    D   ;    JGT    // BONJOUR I'M THAT NASTY COMMENT OHHLALA");
         assert_eq!("D;JGT", instruction.symbolic_code);
     }
 }
